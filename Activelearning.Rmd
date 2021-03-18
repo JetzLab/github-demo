@@ -1,0 +1,69 @@
+---
+title: "Active Learning demo"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+x <- seq(0,1,by=0.01)
+
+y <- - (x * log2(x) + (1-x) * log2(1 - x))
+
+data.frame(x,y)
+
+ggplot(data.frame(x, y), aes(x = x, y = y)) +
+  geom_line(size = 2) +
+  theme_bw() +
+  labs(y = "H(X)", x = "p(X = 1)") +
+  # # labs(color = "Entropy") + 
+  # scale_color_discrete(name = "Entropy", labels = c(H1, H2)) + 
+  # theme(legend.position = c(0.15,0.75),
+  #       legend.title = element_text(size = 18),
+  #       legend.text = element_text(size = 18),
+  #       legend.background = element_rect(fill = "grey80", color = "black"))+
+  theme(panel.grid = element_blank(),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18))
+
+ggsave("entropy.png")
+
+```
+
+```{r}
+x <- seq(0,10,by=0.01)
+
+loc <- 5
+shape1 <- 0.1
+y1 <- plogis(x,loc,shape1)
+shape2 <- 1
+y2 <- plogis(x,loc,shape2)
+
+H1 <- round(-sum(y1 * log2(y1)),1)
+H2 <- round(-sum(y2 * log2(y2)),1)
+
+df1 <- data.frame(x = x, y = y1, shape = shape1)
+df2 <- data.frame(x = x, y = y2, shape = shape2)
+
+df <- rbind(df1, df2)
+
+ggplot(df, aes(x = x, y = y, group = factor(shape), color = factor(shape))) +
+  geom_line(size = 3) +
+  theme_bw() +
+  # labs(x = "X", y = "p(X)") +
+  scale_color_discrete(name = "Entropy*", labels = c(H1, H2)) + 
+  theme(legend.position = c(0.15,0.75),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 18),
+        legend.background = element_rect(fill = "grey80", color = "black"))+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank())
+
+ggsave("entropy2.png")
+
+```
